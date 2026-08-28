@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/api_service.dart';
+import '../theme/app_theme.dart';
 import 'results_screen.dart';
 
 class UploadScreen extends StatefulWidget {
@@ -55,17 +56,58 @@ class _UploadScreenState extends State<UploadScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Image Quality Insufficient'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Image quality insufficient'),
         content: const Text(
-          'The uploaded image did not meet the minimum quality threshold '
-          '(blur, illumination, or framing). Please recapture the fundus image.',
+          'This image did not meet the minimum quality threshold — it may be '
+          'blurred, poorly lit, or off-center. Recapture the fundus image and try again.',
         ),
         actions: [
-          TextButton(
+          FilledButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: const Text('Recapture'),
           ),
         ],
+      ),
+    );
+  }
+
+  /// The signature element: a circular iris-styled viewfinder instead of
+  /// a generic rectangular photo box. Frames the eye and ties the visual
+  /// identity to the app's subject and name.
+  Widget _buildViewfinder() {
+    return Container(
+      height: 280,
+      width: 280,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: const SweepGradient(
+          colors: [ClarusColors.ink, ClarusColors.accent, ClarusColors.ink],
+        ),
+      ),
+      padding: const EdgeInsets.all(4),
+      child: Container(
+        decoration: const BoxDecoration(
+            shape: BoxShape.circle, color: ClarusColors.canvas),
+        padding: const EdgeInsets.all(6),
+        child: ClipOval(
+          child: Container(
+            color: ClarusColors.cardSurface,
+            child: _selectedImage == null
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.remove_red_eye_outlined,
+                          size: 48, color: ClarusColors.textMuted),
+                      const SizedBox(height: 10),
+                      Text('Center the fundus image',
+                          style: Theme.of(context).textTheme.bodySmall,
+                          textAlign: TextAlign.center),
+                    ],
+                  )
+                : Image.file(_selectedImage!, fit: BoxFit.cover),
+          ),
+        ),
       ),
     );
   }
@@ -73,51 +115,41 @@ class _UploadScreenState extends State<UploadScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Clarus — Fundus Screening')),
+      appBar: AppBar(title: const Text('New Screening')),
       body: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              height: 280,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade400),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: _selectedImage == null
-                  ? const Center(child: Text('No image selected'))
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.file(_selectedImage!, fit: BoxFit.cover),
-                    ),
-            ),
-            const SizedBox(height: 20),
+            Center(child: _buildViewfinder()),
+            const SizedBox(height: 28),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ElevatedButton.icon(
-                  onPressed: () => _pickImage(ImageSource.camera),
-                  icon: const Icon(Icons.camera_alt),
-                  label: const Text('Capture'),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () => _pickImage(ImageSource.camera),
+                    icon: const Icon(Icons.camera_alt_outlined, size: 20),
+                    label: const Text('Capture'),
+                  ),
                 ),
-                ElevatedButton.icon(
-                  onPressed: () => _pickImage(ImageSource.gallery),
-                  icon: const Icon(Icons.photo_library),
-                  label: const Text('Gallery'),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () => _pickImage(ImageSource.gallery),
+                    icon: const Icon(Icons.photo_library_outlined, size: 20),
+                    label: const Text('Gallery'),
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 28),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _selectedImage == null || _isUploading
                     ? null
                     : _submitImage,
-                style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16)),
                 child: _isUploading
                     ? const SizedBox(
                         height: 20,
@@ -125,8 +157,14 @@ class _UploadScreenState extends State<UploadScreen> {
                         child: CircularProgressIndicator(
                             strokeWidth: 2, color: Colors.white),
                       )
-                    : const Text('Analyze Image'),
+                    : const Text('Analyze image'),
               ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Images are checked for quality before classification.',
+              style: Theme.of(context).textTheme.bodySmall,
+              textAlign: TextAlign.center,
             ),
           ],
         ),

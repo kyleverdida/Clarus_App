@@ -1,72 +1,105 @@
 import 'package:flutter/material.dart';
 import '../models/screening_result.dart';
+import '../theme/app_theme.dart';
 
 class ResultsScreen extends StatelessWidget {
   final ScreeningResult result;
   const ResultsScreen({super.key, required this.result});
 
-  Color _triageColor() {
-    switch (result.triage) {
-      case 'Normal':
-        return Colors.green;
-      case 'Monitor':
-        return Colors.orange;
-      case 'Refer':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final color = ClarusColors.forTriage(result.triage);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Screening Result')),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Structural device: a colored edge-bar, not a generic badge —
+            // codes urgency at a glance and is reused on History rows too.
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 20),
               decoration: BoxDecoration(
-                color: _triageColor().withOpacity(0.15),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: _triageColor(), width: 2),
+                color: ClarusColors.cardSurface,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: ClarusColors.divider),
               ),
-              child: Column(
-                children: [
-                  Text(
-                    result.triage.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: 28, fontWeight: FontWeight.bold, color: _triageColor(),
+              child: IntrinsicHeight(
+                child: Row(
+                  children: [
+                    Container(
+                        width: 6,
+                        decoration: BoxDecoration(
+                          color: color,
+                          borderRadius: const BorderRadius.horizontal(
+                              left: Radius.circular(16)),
+                        )),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 24, horizontal: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('TRIAGE RESULT',
+                                style: Theme.of(context).textTheme.bodySmall),
+                            const SizedBox(height: 6),
+                            Text(result.triage,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displaySmall
+                                    ?.copyWith(color: color)),
+                            const SizedBox(height: 8),
+                            Text(
+                                'Confidence ${(result.confidence * 100).toStringAsFixed(1)}%',
+                                style: ClarusType.mono(
+                                    size: 14, color: ClarusColors.textPrimary)),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text('Confidence: ${(result.confidence * 100).toStringAsFixed(1)}%'),
-                ],
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 24),
-            const Text('Grad-CAM Visualization', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            const SizedBox(height: 8),
-            const Text(
+            const SizedBox(height: 28),
+            Text('Grad-CAM visualization',
+                style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 6),
+            Text(
               'Highlighted regions show what most influenced this prediction. '
               'This does not confirm a diagnosis — final judgment remains with the reviewing clinician.',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+              style: Theme.of(context).textTheme.bodySmall,
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             ClipRRect(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
               child: Image.network(result.gradcamUrl, fit: BoxFit.cover),
             ),
             const SizedBox(height: 24),
-            Text('Encounter ID: ${result.encounterId}', style: const TextStyle(color: Colors.grey)),
-            Text('Timestamp: ${result.timestamp}', style: const TextStyle(color: Colors.grey)),
-            const SizedBox(height: 30),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: ClarusColors.canvas,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: ClarusColors.divider),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Encounter ${result.encounterId}',
+                      style: ClarusType.mono(size: 13)),
+                  const SizedBox(height: 4),
+                  Text('${result.timestamp}', style: ClarusType.mono(size: 13)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 28),
             ElevatedButton(
-              onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
-              child: const Text('Screen Another Image'),
+              onPressed: () =>
+                  Navigator.popUntil(context, (route) => route.isFirst),
+              child: const Text('Screen another image'),
             ),
           ],
         ),

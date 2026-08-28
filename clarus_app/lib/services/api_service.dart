@@ -8,7 +8,8 @@ import '../models/screening_result.dart';
 const bool useMockApi = true;
 
 /// Change this once you know the real deployed backend URL.
-const String baseUrl = 'http://10.0.2.2:8000'; // 10.0.2.2 = localhost for Android emulator
+const String baseUrl =
+    'http://10.0.2.2:8000'; // 10.0.2.2 = localhost for Android emulator
 
 class ApiService {
   Future<ScreeningResult> uploadImage(File imageFile) async {
@@ -54,7 +55,8 @@ class ApiService {
   Future<ScreeningResult> _realUpload(File imageFile) async {
     final uri = Uri.parse('$baseUrl/predict');
     final request = http.MultipartRequest('POST', uri);
-    request.files.add(await http.MultipartFile.fromPath('image', imageFile.path));
+    request.files
+        .add(await http.MultipartFile.fromPath('image', imageFile.path));
 
     final streamedResponse = await request.send();
     final response = await http.Response.fromStream(streamedResponse);
