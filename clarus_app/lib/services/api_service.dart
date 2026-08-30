@@ -1,17 +1,25 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import '../models/history_entry.dart';
 import '../models/screening_result.dart';
 
 /// Toggle this to false once Person B's real backend endpoint is ready.
 /// Keep working against mock data until then — never block on the backend.
-const bool useMockApi = true;
+const bool useMockApi = false;
 
 /// Change this once you know the real deployed backend URL.
 const String baseUrl =
     'http://10.0.2.2:8000'; // 10.0.2.2 = localhost for Android emulator
 
 class ApiService {
+  Future<List<HistoryEntry>> fetchHistory() async {
+    if (useMockApi) {
+      return _mockFetchHistory();
+    }
+    return _realFetchHistory();
+  }
+
   Future<ScreeningResult> uploadImage(File imageFile) async {
     if (useMockApi) {
       return _mockUpload();
@@ -20,6 +28,39 @@ class ApiService {
   }
 
   // ---- MOCK: lets you build and demo the whole app before the backend exists ----
+  Future<List<HistoryEntry>> _mockFetchHistory() async {
+    await Future.delayed(const Duration(seconds: 1));
+
+    final rows = [
+      {
+        'encounter_id': 'mock-001',
+        'worker_name': 'Alicia',
+        'triage': 'Normal',
+        'confidence': 0.94,
+        'gradcam_url': 'https://placehold.co/400x400/22c55e/white?text=Normal',
+        'timestamp': '2026-08-30T09:15:00Z',
+      },
+      {
+        'encounter_id': 'mock-002',
+        'worker_name': 'Marcus',
+        'triage': 'Monitor',
+        'confidence': 0.78,
+        'gradcam_url': 'https://placehold.co/400x400/eab308/white?text=Monitor',
+        'timestamp': '2026-08-29T14:40:00Z',
+      },
+      {
+        'encounter_id': 'mock-003',
+        'worker_name': 'Nora',
+        'triage': 'Refer',
+        'confidence': 0.91,
+        'gradcam_url': 'https://placehold.co/400x400/ef4444/white?text=Refer',
+        'timestamp': '2026-08-28T11:05:00Z',
+      },
+    ];
+
+    return rows.map((row) => HistoryEntry.fromJson(row)).toList();
+  }
+
   Future<ScreeningResult> _mockUpload() async {
     await Future.delayed(const Duration(seconds: 2)); // simulate network delay
 
@@ -49,6 +90,25 @@ class ApiService {
     ];
     final random = outcomes[DateTime.now().second % outcomes.length];
     return ScreeningResult.fromJson(random);
+  }
+
+  Future<List<HistoryEntry>> _realFetchHistory() async {
+    final uri = Uri.parse('$baseUrl/history');
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final decoded = jsonDecode(response.body);
+      if (decoded is! List) {
+        throw Exception('History response was not a list.');
+      }
+
+      return decoded
+          .map((item) => HistoryEntry.fromJson(item as Map<String, dynamic>))
+          .toList();
+    }
+
+    throw Exception(
+        'Failed to fetch history: ${response.statusCode} ${response.body}');
   }
 
   // ---- REAL: swap in once Person B's endpoint is live ----

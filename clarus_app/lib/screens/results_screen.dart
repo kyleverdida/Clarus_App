@@ -8,7 +8,12 @@ class ResultsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = ClarusColors.forTriage(result.triage);
+    // This screen is only ever navigated to when qualityPass was true,
+    // so triage/gradcamUrl/encounterId are guaranteed non-null in practice —
+    // but the fallbacks below keep the UI safe even if that assumption
+    // is ever violated by a future change upstream.
+    final triageText = result.triage ?? 'Unknown';
+    final color = ClarusColors.forTriage(triageText);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Screening Result')),
@@ -17,8 +22,6 @@ class ResultsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Structural device: a colored edge-bar, not a generic badge —
-            // codes urgency at a glance and is reused on History rows too.
             Container(
               decoration: BoxDecoration(
                 color: ClarusColors.cardSurface,
@@ -45,7 +48,7 @@ class ResultsScreen extends StatelessWidget {
                             Text('TRIAGE RESULT',
                                 style: Theme.of(context).textTheme.bodySmall),
                             const SizedBox(height: 6),
-                            Text(result.triage,
+                            Text(triageText,
                                 style: Theme.of(context)
                                     .textTheme
                                     .displaySmall
@@ -73,10 +76,48 @@ class ResultsScreen extends StatelessWidget {
               style: Theme.of(context).textTheme.bodySmall,
             ),
             const SizedBox(height: 14),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.network(result.gradcamUrl, fit: BoxFit.cover),
-            ),
+            if (result.gradcamUrl != null)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.network(
+                  result.gradcamUrl!,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 200,
+                      color: ClarusColors.canvas,
+                      child: const Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.image_not_supported_outlined,
+                                color: ClarusColors.textMuted),
+                            SizedBox(height: 8),
+                            Text('Visualization could not be loaded'),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return const SizedBox(
+                      height: 200,
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  },
+                ),
+              )
+            else
+              Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  color: ClarusColors.canvas,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: ClarusColors.divider),
+                ),
+                child: const Center(child: Text('Visualization unavailable')),
+              ),
             const SizedBox(height: 24),
             Container(
               padding: const EdgeInsets.all(16),
@@ -88,7 +129,7 @@ class ResultsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Encounter ${result.encounterId}',
+                  Text('Encounter ${result.encounterId ?? 'N/A'}',
                       style: ClarusType.mono(size: 13)),
                   const SizedBox(height: 4),
                   Text('${result.timestamp}', style: ClarusType.mono(size: 13)),

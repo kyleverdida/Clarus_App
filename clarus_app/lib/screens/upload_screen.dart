@@ -34,7 +34,7 @@ class _UploadScreenState extends State<UploadScreen> {
       if (!mounted) return;
 
       if (!result.qualityPass) {
-        _showQualityWarning();
+        _showQualityWarning(result.qualityReason);
         return;
       }
 
@@ -52,16 +52,28 @@ class _UploadScreenState extends State<UploadScreen> {
     }
   }
 
-  void _showQualityWarning() {
+  /// Shows a specific, actionable message based on why the image failed
+  /// quality gating, rather than one generic warning for every case.
+  void _showQualityWarning(String? reason) {
+    final message = switch (reason) {
+      'blurry' => 'This image appears too blurry to analyze reliably. '
+          'Hold the camera steady and ensure the lens is focused, then recapture.',
+      'too_dark' => 'This image is too dark to analyze reliably. '
+          'Check the lighting or lens illumination, then recapture.',
+      'overexposed' => 'This image is overexposed. '
+          'Reduce the light source intensity, then recapture.',
+      'unreadable_file' => 'This file could not be read as an image. '
+          'Try capturing or selecting a different file.',
+      _ =>
+        'This image did not meet the minimum quality threshold. Please recapture.',
+    };
+
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Image quality insufficient'),
-        content: const Text(
-          'This image did not meet the minimum quality threshold — it may be '
-          'blurred, poorly lit, or off-center. Recapture the fundus image and try again.',
-        ),
+        content: Text(message),
         actions: [
           FilledButton(
             onPressed: () => Navigator.pop(context),
