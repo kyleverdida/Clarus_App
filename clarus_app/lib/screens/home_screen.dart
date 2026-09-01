@@ -58,7 +58,8 @@ class HomeScreen extends StatelessWidget {
               child: ElevatedButton.icon(
                 onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const UploadScreen()),
+                  MaterialPageRoute(
+                      builder: (_) => UploadScreen(workerName: workerName)),
                 ),
                 icon: const Icon(Icons.add_a_photo_outlined),
                 label: const Text('New screening'),

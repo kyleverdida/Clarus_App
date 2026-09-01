@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import 'home_screen.dart';
 
-/// Lightweight identification, not full authentication — enough to attach
-/// a worker name to encounter records, matching the multi-user framing
-/// in Chapter 1 ("assist healthcare workers and physicians").
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -15,14 +12,28 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _nameController = TextEditingController();
   String _role = 'Health Worker';
+  bool _nameEntered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Rebuild whenever the text changes, so the button can enable/disable
+    // live instead of only validating after the user taps Continue.
+    _nameController.addListener(() {
+      final hasText = _nameController.text.trim().isNotEmpty;
+      if (hasText != _nameEntered) {
+        setState(() => _nameEntered = hasText);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
 
   void _continue() {
-    if (_nameController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter your name to continue')),
-      );
-      return;
-    }
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -42,8 +53,6 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Wordmark, styled with the display face — the app's only
-              // other appearance of the iris-ring motif, kept quiet here.
               Row(
                 children: [
                   Container(
@@ -73,6 +82,10 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 8),
               TextField(
                 controller: _nameController,
+                textInputAction: TextInputAction.done,
+                onSubmitted: (_) {
+                  if (_nameEntered) _continue();
+                },
                 decoration: InputDecoration(
                   hintText: 'e.g. Nurse Reyes',
                   filled: true,
@@ -98,8 +111,13 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 36),
               SizedBox(
                 width: double.infinity,
+                // Disabled (greyed out, unresponsive) until a name is
+                // entered — the constraint is visible before the user
+                // has to discover it by tapping and getting a snackbar.
                 child: ElevatedButton(
-                    onPressed: _continue, child: const Text('Continue')),
+                  onPressed: _nameEntered ? _continue : null,
+                  child: const Text('Continue'),
+                ),
               ),
             ],
           ),

@@ -8,10 +8,6 @@ class ResultsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // This screen is only ever navigated to when qualityPass was true,
-    // so triage/gradcamUrl/encounterId are guaranteed non-null in practice —
-    // but the fallbacks below keep the UI safe even if that assumption
-    // is ever violated by a future change upstream.
     final triageText = result.triage ?? 'Unknown';
     final color = ClarusColors.forTriage(triageText);
 
@@ -86,14 +82,15 @@ class ResultsScreen extends StatelessWidget {
                     return Container(
                       height: 200,
                       color: ClarusColors.canvas,
-                      child: const Center(
+                      child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.image_not_supported_outlined,
                                 color: ClarusColors.textMuted),
-                            SizedBox(height: 8),
-                            Text('Visualization could not be loaded'),
+                            const SizedBox(height: 8),
+                            Text('Visualization could not be loaded',
+                                style: Theme.of(context).textTheme.bodySmall),
                           ],
                         ),
                       ),

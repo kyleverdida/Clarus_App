@@ -6,7 +6,8 @@ import '../theme/app_theme.dart';
 import 'results_screen.dart';
 
 class UploadScreen extends StatefulWidget {
-  const UploadScreen({super.key});
+  final String workerName;
+  const UploadScreen({super.key, required this.workerName});
 
   @override
   State<UploadScreen> createState() => _UploadScreenState();
@@ -30,7 +31,8 @@ class _UploadScreenState extends State<UploadScreen> {
     setState(() => _isUploading = true);
 
     try {
-      final result = await _apiService.uploadImage(_selectedImage!);
+      final result =
+          await _apiService.uploadImage(_selectedImage!, widget.workerName);
       if (!mounted) return;
 
       if (!result.qualityPass) {
