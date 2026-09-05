@@ -93,9 +93,9 @@ class _UploadScreenState extends State<UploadScreen> {
     return Container(
       height: 280,
       width: 280,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         shape: BoxShape.circle,
-        gradient: const SweepGradient(
+        gradient: SweepGradient(
           colors: [ClarusColors.ink, ClarusColors.accent, ClarusColors.ink],
         ),
       ),
@@ -111,7 +111,7 @@ class _UploadScreenState extends State<UploadScreen> {
                 ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.remove_red_eye_outlined,
+                        const Icon(Icons.remove_red_eye_outlined,
                           size: 48, color: ClarusColors.textMuted),
                       const SizedBox(height: 10),
                       Text('Center the fundus image',

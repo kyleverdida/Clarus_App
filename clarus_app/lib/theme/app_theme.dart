@@ -119,7 +119,7 @@ ThemeData clarusTheme() {
     ),
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: ClarusColors.cardSurface,
-      indicatorColor: ClarusColors.accent.withOpacity(0.18),
+      indicatorColor: ClarusColors.accent.withValues(alpha: 0.18),
       labelTextStyle: WidgetStateProperty.all(
         ClarusType.textTheme().bodySmall?.copyWith(color: ClarusColors.ink),
       ),

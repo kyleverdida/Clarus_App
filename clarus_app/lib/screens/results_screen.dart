@@ -86,7 +86,7 @@ class ResultsScreen extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.image_not_supported_outlined,
+                            const Icon(Icons.image_not_supported_outlined,
                                 color: ClarusColors.textMuted),
                             const SizedBox(height: 8),
                             Text('Visualization could not be loaded',

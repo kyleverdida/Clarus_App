@@ -38,14 +38,14 @@ class HomeScreen extends StatelessWidget {
             Text("Today's screenings",
                 style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
-            Row(
+            const Row(
               children: [
                 _StatCard(
                     label: 'Normal', value: '3', color: ClarusColors.normal),
-                const SizedBox(width: 10),
+                SizedBox(width: 10),
                 _StatCard(
                     label: 'Monitor', value: '1', color: ClarusColors.accent),
-                const SizedBox(width: 10),
+                SizedBox(width: 10),
                 _StatCard(
                     label: 'Refer', value: '1', color: ClarusColors.refer),
               ],
