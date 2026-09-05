@@ -111,7 +111,7 @@ class _UploadScreenState extends State<UploadScreen> {
                 ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                        const Icon(Icons.remove_red_eye_outlined,
+                      const Icon(Icons.remove_red_eye_outlined,
                           size: 48, color: ClarusColors.textMuted),
                       const SizedBox(height: 10),
                       Text('Center the fundus image',
