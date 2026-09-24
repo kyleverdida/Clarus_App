@@ -3,6 +3,7 @@
 /// ScreeningResult (which is specifically the /predict response).
 class HistoryEntry {
   final String encounterId;
+  final String? patientId;
   final String workerName;
   final String? triage; // nullable defensively, even though only
   // successful (quality-passed) encounters are
@@ -13,6 +14,7 @@ class HistoryEntry {
 
   HistoryEntry({
     required this.encounterId,
+    required this.patientId,
     required this.workerName,
     required this.triage,
     required this.confidence,
@@ -23,6 +25,7 @@ class HistoryEntry {
   factory HistoryEntry.fromJson(Map<String, dynamic> json) {
     return HistoryEntry(
       encounterId: json['encounter_id'] as String,
+      patientId: json['patient_id'] as String?,
       workerName: json['worker_name'] as String? ?? 'Unknown',
       triage: json['triage'] as String?,
       confidence: (json['confidence'] as num?)?.toDouble() ?? 0.0,

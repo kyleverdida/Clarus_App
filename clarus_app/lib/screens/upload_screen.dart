@@ -1,6 +1,8 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+
 import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import 'results_screen.dart';
@@ -16,7 +18,14 @@ class UploadScreen extends StatefulWidget {
 class _UploadScreenState extends State<UploadScreen> {
   File? _selectedImage;
   bool _isUploading = false;
+  final _patientIdController = TextEditingController();
   final ApiService _apiService = ApiService();
+
+  @override
+  void dispose() {
+    _patientIdController.dispose();
+    super.dispose();
+  }
 
   Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
@@ -27,12 +36,20 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 
   Future<void> _submitImage() async {
-    if (_selectedImage == null) return;
+    if (_selectedImage == null || _patientIdController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enter a patient ID before analyzing.')),
+      );
+      return;
+    }
     setState(() => _isUploading = true);
 
     try {
-      final result =
-          await _apiService.uploadImage(_selectedImage!, widget.workerName);
+      final result = await _apiService.uploadImage(
+        _selectedImage!,
+        widget.workerName,
+        _patientIdController.text.trim(),
+      );
       if (!mounted) return;
 
       if (!result.qualityPass) {
@@ -46,9 +63,8 @@ class _UploadScreenState extends State<UploadScreen> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Upload failed: $e')),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Upload failed: $e')));
     } finally {
       if (mounted) setState(() => _isUploading = false);
     }
@@ -58,16 +74,19 @@ class _UploadScreenState extends State<UploadScreen> {
   /// quality gating, rather than one generic warning for every case.
   void _showQualityWarning(String? reason) {
     final message = switch (reason) {
-      'blurry' => 'This image appears too blurry to analyze reliably. '
-          'Hold the camera steady and ensure the lens is focused, then recapture.',
-      'too_dark' => 'This image is too dark to analyze reliably. '
-          'Check the lighting or lens illumination, then recapture.',
-      'overexposed' => 'This image is overexposed. '
-          'Reduce the light source intensity, then recapture.',
-      'unreadable_file' => 'This file could not be read as an image. '
-          'Try capturing or selecting a different file.',
-      _ =>
-        'This image did not meet the minimum quality threshold. Please recapture.',
+      'blurry' =>
+        'This image appears too blurry to analyze reliably. '
+            'Hold the camera steady and ensure the lens is focused, then recapture.',
+      'too_dark' =>
+        'This image is too dark to analyze reliably. '
+            'Check the lighting or lens illumination, then recapture.',
+      'overexposed' =>
+        'This image is overexposed. '
+            'Reduce the light source intensity, then recapture.',
+      'unreadable_file' =>
+        'This file could not be read as an image. '
+            'Try capturing or selecting a different file.',
+      _ => 'This image did not meet the minimum quality threshold. Please recapture.',
     };
 
     showDialog(
@@ -102,7 +121,9 @@ class _UploadScreenState extends State<UploadScreen> {
       padding: const EdgeInsets.all(4),
       child: Container(
         decoration: const BoxDecoration(
-            shape: BoxShape.circle, color: ClarusColors.canvas),
+          shape: BoxShape.circle,
+          color: ClarusColors.canvas,
+        ),
         padding: const EdgeInsets.all(6),
         child: ClipOval(
           child: Container(
@@ -111,12 +132,17 @@ class _UploadScreenState extends State<UploadScreen> {
                 ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.remove_red_eye_outlined,
-                          size: 48, color: ClarusColors.textMuted),
+                      const Icon(
+                        Icons.remove_red_eye_outlined,
+                        size: 48,
+                        color: ClarusColors.textMuted,
+                      ),
                       const SizedBox(height: 10),
-                      Text('Center the fundus image',
-                          style: Theme.of(context).textTheme.bodySmall,
-                          textAlign: TextAlign.center),
+                      Text(
+                        'Center the fundus image',
+                        style: Theme.of(context).textTheme.bodySmall,
+                        textAlign: TextAlign.center,
+                      ),
                     ],
                   )
                 : Image.file(_selectedImage!, fit: BoxFit.cover),
@@ -137,6 +163,16 @@ class _UploadScreenState extends State<UploadScreen> {
           children: [
             Center(child: _buildViewfinder()),
             const SizedBox(height: 28),
+            TextField(
+              controller: _patientIdController,
+              textInputAction: TextInputAction.next,
+              decoration: const InputDecoration(
+                labelText: 'Patient Name',
+                hintText: 'Enter the patient name',
+                prefixIcon: Icon(Icons.person_outline),
+              ),
+            ),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -169,7 +205,9 @@ class _UploadScreenState extends State<UploadScreen> {
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
                     : const Text('Analyze image'),
               ),

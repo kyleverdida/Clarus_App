@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import 'upload_screen.dart';
 import 'history_screen.dart';
+import 'monitoring_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final String workerName;
@@ -63,6 +64,14 @@ class HomeScreen extends StatelessWidget {
                 ),
                 icon: const Icon(Icons.add_a_photo_outlined),
                 label: const Text('New screening'),
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.assignment_late_outlined),
+              tooltip: 'Monitoring list',
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const MonitoringScreen()),
               ),
             ),
             const SizedBox(height: 28),

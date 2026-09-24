@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/screening_result.dart';
 import '../theme/app_theme.dart';
+import 'follow_up_screen.dart';
 
 class ResultsScreen extends StatelessWidget {
   final ScreeningResult result;
@@ -134,6 +135,18 @@ class ResultsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 28),
+            if (triageText.toLowerCase() == 'monitor') ...[
+              OutlinedButton.icon(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => FollowUpScreen(result: result)),
+                ),
+                icon: const Icon(Icons.event_note_outlined),
+                label: const Text('Create follow-up plan'),
+              ),
+              const SizedBox(height: 12),
+            ],
             ElevatedButton(
               onPressed: () =>
                   Navigator.popUntil(context, (route) => route.isFirst),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+
 import '../theme/app_theme.dart';
 import '../services/api_service.dart';
 import '../models/history_entry.dart';
+import 'past_result_screen.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -59,8 +61,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 // even when the initial load failed.
                 children: [
                   const SizedBox(height: 100),
-                  const Icon(Icons.cloud_off,
-                      size: 40, color: ClarusColors.textMuted),
+                  const Icon(
+                    Icons.cloud_off,
+                    size: 40,
+                    color: ClarusColors.textMuted,
+                  ),
                   const SizedBox(height: 12),
                   Center(
                     child: Text(
@@ -108,23 +113,37 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     child: Row(
                       children: [
                         Container(
-                            width: 5,
-                            decoration: BoxDecoration(
-                              color: color,
-                              borderRadius: const BorderRadius.horizontal(
-                                  left: Radius.circular(14)),
-                            )),
+                          width: 5,
+                          decoration: BoxDecoration(
+                            color: color,
+                            borderRadius: const BorderRadius.horizontal(
+                              left: Radius.circular(14),
+                            ),
+                          ),
+                        ),
                         Expanded(
                           child: ListTile(
-                            title: Text('Encounter ${entry.encounterId}',
-                                style: Theme.of(context).textTheme.titleMedium),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => PastResultScreen(result: entry),
+                              ),
+                            ),
+                            title: Text(
+                              'Encounter ${entry.encounterId}',
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
                             subtitle: Text(
                               '${entry.workerName} · ${_formatTimestamp(entry.timestamp)}',
                               style: ClarusType.mono(size: 12),
                             ),
-                            trailing: Text(triageText,
-                                style: TextStyle(
-                                    color: color, fontWeight: FontWeight.w600)),
+                            trailing: Text(
+                              triageText,
+                              style: TextStyle(
+                                color: color,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                         ),
                       ],

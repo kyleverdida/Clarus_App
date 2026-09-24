@@ -16,8 +16,9 @@ samples, guidance on mobile development, and a full API reference.
 # Clarus Mobile App
 
 Clarus is a Flutter mobile app for diabetic retinopathy screening. The app
-allows a health worker to submit a retinal image, view the screening result,
-and review previous encounters.
+allows a health worker to submit a retinal image with a patient identifier,
+view the screening result, review previous encounters, and manage follow-up
+plans for patients with a `Monitor` result.
 
 ## Requirements
 
@@ -80,8 +81,16 @@ an iOS simulator, use `http://localhost:8000`.
 
 The app currently uses these backend endpoints:
 
-- `POST /predict` to submit a retinal image and worker name
+- `POST /predict` to submit a retinal image, worker name, and patient ID
 - `GET /history` to load previous screening encounters
+- `POST /follow-ups` to save a consented follow-up plan
+- `GET /follow-ups` to load the monitoring list
+- `PATCH /follow-ups/{follow_up_id}` to reschedule or complete a plan
+
+The monitoring workflow supports patient search, status filters, return-date
+updates, completion tracking, and viewing the past screening result linked to
+an encounter. Follow-up plans are currently persisted by the backend, but
+SMS/email delivery is not enabled yet.
 
 ## Run without the backend
 
@@ -94,8 +103,8 @@ results and history data instead of making network requests.
 ```text
 lib/
 	main.dart                 App entry point
-	models/                   Screening and history data models
-	screens/                  Login, dashboard, screening, and history views
+	models/                   Screening, history, and follow-up data models
+	screens/                  Login, dashboard, screening, history, and monitoring views
 	services/api_service.dart Backend and mock API integration
 	theme/                    Application theme
 ```
