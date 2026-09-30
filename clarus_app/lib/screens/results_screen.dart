@@ -2,10 +2,17 @@ import 'package:flutter/material.dart';
 import '../models/screening_result.dart';
 import '../theme/app_theme.dart';
 import 'follow_up_screen.dart';
+import 'referral_slip_screen.dart';
 
 class ResultsScreen extends StatelessWidget {
   final ScreeningResult result;
-  const ResultsScreen({super.key, required this.result});
+  final String? patientName;
+
+  const ResultsScreen({
+    super.key,
+    required this.result,
+    this.patientName,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -52,9 +59,20 @@ class ResultsScreen extends StatelessWidget {
                                     ?.copyWith(color: color)),
                             const SizedBox(height: 8),
                             Text(
-                                'Confidence ${(result.confidence * 100).toStringAsFixed(1)}%',
+                                'Triage confidence ${((result.triageConfidence ?? result.confidence) * 100).toStringAsFixed(1)}%',
                                 style: ClarusType.mono(
                                     size: 14, color: ClarusColors.textPrimary)),
+                            if (result.severity != null) ...[
+                              const SizedBox(height: 4),
+                              Text(
+                                'Severity ${result.severity} '
+                                '${result.severityConfidence == null ? '' : '(${(result.severityConfidence! * 100).toStringAsFixed(1)}%)'}',
+                                style: ClarusType.mono(
+                                  size: 14,
+                                  color: ClarusColors.textPrimary,
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                       ),
@@ -147,6 +165,20 @@ class ResultsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
             ],
+            OutlinedButton.icon(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ReferralSlipScreen(
+                    result: result,
+                    patientName: patientName,
+                  ),
+                ),
+              ),
+              icon: const Icon(Icons.file_present_outlined),
+              label: const Text('Export screening record'),
+            ),
+            const SizedBox(height: 12),
             ElevatedButton(
               onPressed: () =>
                   Navigator.popUntil(context, (route) => route.isFirst),

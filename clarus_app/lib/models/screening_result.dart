@@ -1,7 +1,8 @@
 // Matches the API contract agreed with Person B (backend):
 // POST /predict
 //   in: image file
-//   out (quality passed): { quality_pass: true, triage, confidence, gradcam_url, encounter_id }
+//   out (quality passed): { quality_pass: true, triage, confidence, triage_confidence,
+//                           severity, severity_confidence, gradcam_url, encounter_id }
 //   out (quality FAILED):  { quality_pass: false, triage: null, confidence: 0.0,
 //                            gradcam_url: null, encounter_id: null, quality_reason: "..." }
 //
@@ -14,6 +15,9 @@ class ScreeningResult {
   final String?
       triage; // "Normal" | "Monitor" | "Refer" | null if quality failed
   final double confidence;
+  final double? triageConfidence;
+  final String? severity;
+  final double? severityConfidence;
   final String? gradcamUrl;
   final String? encounterId;
   final String?
@@ -24,6 +28,9 @@ class ScreeningResult {
     required this.qualityPass,
     required this.triage,
     required this.confidence,
+    this.triageConfidence,
+    this.severity,
+    this.severityConfidence,
     required this.gradcamUrl,
     required this.encounterId,
     this.qualityReason,
@@ -35,6 +42,9 @@ class ScreeningResult {
       qualityPass: json['quality_pass'] as bool,
       triage: json['triage'] as String?,
       confidence: (json['confidence'] as num?)?.toDouble() ?? 0.0,
+      triageConfidence: (json['triage_confidence'] as num?)?.toDouble(),
+      severity: json['severity'] as String?,
+      severityConfidence: (json['severity_confidence'] as num?)?.toDouble(),
       gradcamUrl: json['gradcam_url'] as String?,
       encounterId: json['encounter_id'] as String?,
       qualityReason: json['quality_reason'] as String?,

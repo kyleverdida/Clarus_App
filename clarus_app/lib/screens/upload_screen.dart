@@ -59,7 +59,12 @@ class _UploadScreenState extends State<UploadScreen> {
 
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => ResultsScreen(result: result)),
+        MaterialPageRoute(
+          builder: (_) => ResultsScreen(
+            result: result,
+            patientName: _patientIdController.text.trim(),
+          ),
+        ),
       );
     } catch (e) {
       if (!mounted) return;

@@ -93,6 +93,9 @@ class ApiService {
         'quality_pass': true,
         'triage': 'Normal',
         'confidence': 0.94,
+        'triage_confidence': 0.94,
+        'severity': 'No diabetic retinopathy detected',
+        'severity_confidence': 0.94,
         'gradcam_url':
             'https://placehold.co/400x400/22c55e/white/png?text=Normal',
         'encounter_id': 'mock-001',
@@ -102,6 +105,9 @@ class ApiService {
         'quality_pass': true,
         'triage': 'Monitor',
         'confidence': 0.78,
+        'triage_confidence': 0.82,
+        'severity': 'Mild',
+        'severity_confidence': 0.76,
         'gradcam_url':
             'https://placehold.co/400x400/eab308/white/png?text=Monitor',
         'encounter_id': 'mock-002',
@@ -111,6 +117,9 @@ class ApiService {
         'quality_pass': true,
         'triage': 'Refer',
         'confidence': 0.91,
+        'triage_confidence': 0.91,
+        'severity': 'Moderate',
+        'severity_confidence': 0.84,
         'gradcam_url':
             'https://placehold.co/400x400/ef4444/white/png?text=Refer',
         'encounter_id': 'mock-003',

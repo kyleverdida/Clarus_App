@@ -87,6 +87,23 @@ The app currently uses these backend endpoints:
 - `GET /follow-ups` to load the monitoring list
 - `PATCH /follow-ups/{follow_up_id}` to reschedule or complete a plan
 
+For quality-passed `/predict` responses, the frontend accepts the existing
+`triage` and `confidence` fields plus these optional fields:
+
+```json
+{
+	"triage": "Monitor",
+	"confidence": 0.82,
+	"triage_confidence": 0.82,
+	"severity": "Mild",
+	"severity_confidence": 0.76
+}
+```
+
+`triage_confidence` is the model confidence for the action category. The
+`severity` and `severity_confidence` fields must come from a separately
+validated severity classifier; the app does not infer severity from triage.
+
 The monitoring workflow supports patient search, status filters, return-date
 updates, completion tracking, and viewing the past screening result linked to
 an encounter. Follow-up plans are currently persisted by the backend, but
