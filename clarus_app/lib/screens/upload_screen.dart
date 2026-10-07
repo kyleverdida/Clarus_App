@@ -79,19 +79,16 @@ class _UploadScreenState extends State<UploadScreen> {
   /// quality gating, rather than one generic warning for every case.
   void _showQualityWarning(String? reason) {
     final message = switch (reason) {
-      'blurry' =>
-        'This image appears too blurry to analyze reliably. '
-            'Hold the camera steady and ensure the lens is focused, then recapture.',
-      'too_dark' =>
-        'This image is too dark to analyze reliably. '
-            'Check the lighting or lens illumination, then recapture.',
-      'overexposed' =>
-        'This image is overexposed. '
-            'Reduce the light source intensity, then recapture.',
-      'unreadable_file' =>
-        'This file could not be read as an image. '
-            'Try capturing or selecting a different file.',
-      _ => 'This image did not meet the minimum quality threshold. Please recapture.',
+      'blurry' => 'This image appears too blurry to analyze reliably. '
+          'Hold the camera steady and ensure the lens is focused, then recapture.',
+      'too_dark' => 'This image is too dark to analyze reliably. '
+          'Check the lighting or lens illumination, then recapture.',
+      'overexposed' => 'This image is overexposed. '
+          'Reduce the light source intensity, then recapture.',
+      'unreadable_file' => 'This file could not be read as an image. '
+          'Try capturing or selecting a different file.',
+      _ =>
+        'This image did not meet the minimum quality threshold. Please recapture.',
     };
 
     showDialog(
