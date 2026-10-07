@@ -58,8 +58,7 @@ class _MonitoringScreenState extends State<MonitoringScreen> {
           final filteredPlans = plans.where((plan) {
             final matchesSearch =
                 query.isEmpty || plan.patientId.toLowerCase().contains(query);
-            final matchesStatus =
-                _statusFilter == 'All' ||
+            final matchesStatus = _statusFilter == 'All' ||
                 plan.status == _statusFilter.toLowerCase();
             return matchesSearch && matchesStatus;
           }).toList();
@@ -200,11 +199,7 @@ class _PlanTile extends StatelessWidget {
               const SizedBox(width: 8),
               Text('Return ${_formatDate(plan.returnDate)}'),
               const Spacer(),
-              Icon(
-                plan.contactMethod == 'SMS'
-                    ? Icons.sms_outlined
-                    : Icons.email_outlined,
-              ),
+              const Icon(Icons.email_outlined),
               const SizedBox(width: 4),
               Text(plan.contactMethod),
             ],
@@ -212,7 +207,8 @@ class _PlanTile extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             plan.status == 'overdue'
-                ? 'Needs follow-up action'
+                ? 'Needs follow-up action - ${plan.reminderCount} '
+                    'reminder${plan.reminderCount == 1 ? '' : 's'} sent'
                 : 'Reminder scheduled',
             style: Theme.of(context).textTheme.bodySmall,
           ),
@@ -233,10 +229,8 @@ class _PlanTile extends StatelessWidget {
                     if (date != null) {
                       try {
                         await ApiService().updateFollowUpPlan(plan.followUpId, {
-                          'return_date': date
-                              .toIso8601String()
-                              .split('T')
-                              .first,
+                          'return_date':
+                              date.toIso8601String().split('T').first,
                         });
                         await onChanged();
                         if (context.mounted) {

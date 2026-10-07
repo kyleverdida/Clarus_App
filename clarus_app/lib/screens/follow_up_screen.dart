@@ -17,7 +17,6 @@ class _FollowUpScreenState extends State<FollowUpScreen> {
   final _patientIdController = TextEditingController();
   final _contactController = TextEditingController();
   DateTime? _returnDate;
-  String _contactMethod = 'SMS';
   bool _consentGiven = false;
   bool _saving = false;
 
@@ -62,7 +61,7 @@ class _FollowUpScreenState extends State<FollowUpScreen> {
       await ApiService().createFollowUpPlan(
         patientId: _patientIdController.text.trim(),
         encounterId: widget.result.encounterId,
-        contactMethod: _contactMethod,
+        contactMethod: 'Email',
         contactValue: _contactController.text.trim(),
         consentGiven: _consentGiven,
         returnDate: _returnDate!,
@@ -84,9 +83,9 @@ class _FollowUpScreenState extends State<FollowUpScreen> {
       builder: (context) => AlertDialog(
         title: const Text('Follow-up plan ready'),
         content: const Text(
-          'The patient will be reminded 7 days before, 1 day before, and on '
-          'the return date. The plan still needs to be connected to the '
-          'notification service before messages are sent.',
+          'An email will be sent 7 days before the return date and again on '
+          'the return date. The plan will then be flagged as overdue on the '
+          'Monitoring list if the visit is missed.',
         ),
         actions: [
           FilledButton(
@@ -113,7 +112,9 @@ class _FollowUpScreenState extends State<FollowUpScreen> {
         children: [
           Text(
             'Monitor result',
-            style: Theme.of(context).textTheme.headlineSmall
+            style: Theme.of(context)
+                .textTheme
+                .headlineSmall
                 ?.copyWith(color: ClarusColors.accent),
           ),
           const SizedBox(height: 6),
@@ -132,38 +133,10 @@ class _FollowUpScreenState extends State<FollowUpScreen> {
           const SizedBox(height: 16),
           TextField(
             controller: _contactController,
-            keyboardType: _contactMethod == 'SMS'
-                ? TextInputType.phone
-                : TextInputType.emailAddress,
-            decoration: InputDecoration(
-              labelText: _contactMethod == 'SMS'
-                  ? 'Mobile number'
-                  : 'Email address',
+            keyboardType: TextInputType.emailAddress,
+            decoration: const InputDecoration(
+              labelText: 'Email address',
             ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            'Reminder channel',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 8),
-          SegmentedButton<String>(
-            segments: const [
-              ButtonSegment(
-                value: 'SMS',
-                label: Text('SMS'),
-                icon: Icon(Icons.sms_outlined),
-              ),
-              ButtonSegment(
-                value: 'Email',
-                label: Text('Email'),
-                icon: Icon(Icons.email_outlined),
-              ),
-            ],
-            selected: {_contactMethod},
-            onSelectionChanged: (selection) {
-              setState(() => _contactMethod = selection.first);
-            },
           ),
           const SizedBox(height: 20),
           Text(
@@ -204,10 +177,11 @@ class _FollowUpScreenState extends State<FollowUpScreen> {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 8),
-                const Text('7 days before the return date'),
-                const Text('1 day before the return date'),
-                const Text('On the return date'),
-                const Text('Follow-up task after a missed visit'),
+                const Text('Email sent 7 days before the return date'),
+                const Text('A second email on the return date'),
+                const Text(
+                  'Flagged as overdue on the Monitoring list after that',
+                ),
               ],
             ),
           ),

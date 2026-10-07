@@ -6,6 +6,7 @@ class FollowUpPlan {
   final String contactValue;
   final DateTime returnDate;
   final String status;
+  final int reminderCount;
 
   const FollowUpPlan({
     required this.followUpId,
@@ -15,6 +16,7 @@ class FollowUpPlan {
     required this.contactValue,
     required this.returnDate,
     required this.status,
+    required this.reminderCount,
   });
 
   factory FollowUpPlan.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class FollowUpPlan {
       contactValue: json['contact_value'] as String,
       returnDate: DateTime.parse(json['return_date'] as String),
       status: json['status'] as String,
+      reminderCount: json['reminder_count'] as int? ?? 0,
     );
   }
 }
