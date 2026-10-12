@@ -16,6 +16,7 @@ class FollowUpScreen extends StatefulWidget {
 class _FollowUpScreenState extends State<FollowUpScreen> {
   final _patientIdController = TextEditingController();
   final _contactController = TextEditingController();
+  static final _emailPattern = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
   DateTime? _returnDate;
   bool _consentGiven = false;
   bool _saving = false;
@@ -52,6 +53,13 @@ class _FollowUpScreenState extends State<FollowUpScreen> {
             'Complete the patient details, return date, and consent.',
           ),
         ),
+      );
+      return;
+    }
+
+    if (!_emailPattern.hasMatch(_contactController.text.trim())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enter a valid email address.')),
       );
       return;
     }
