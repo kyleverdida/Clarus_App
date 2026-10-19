@@ -87,8 +87,15 @@ class _UploadScreenState extends State<UploadScreen> {
           'Reduce the light source intensity, then recapture.',
       'unreadable_file' => 'This file could not be read as an image. '
           'Try capturing or selecting a different file.',
+      'retina_not_detected' ||
+      'retina_too_small_in_frame' ||
+      'unusual_colour_for_fundus' =>
+      'No clear retina was found in this image. Centre the retina in the '
+          'frame, fill most of it, and recapture.',
+      'retina_off_center' =>
+      'The retina is off-centre. Centre it in the frame and recapture.',
       _ =>
-        'This image did not meet the minimum quality threshold. Please recapture.',
+      'This image did not meet the minimum quality threshold. Please recapture.',
     };
 
     showDialog(

@@ -12,10 +12,10 @@ const String baseUrl = 'http://10.0.2.2:8000';
 
 class ApiService {
   Future<ScreeningResult> uploadImage(
-    File imageFile,
-    String workerName,
-    String patientId,
-  ) async {
+      File imageFile,
+      String workerName,
+      String patientId,
+      ) async {
     if (useMockApi) {
       return _mockUpload();
     }
@@ -68,9 +68,9 @@ class ApiService {
   }
 
   Future<FollowUpPlan> updateFollowUpPlan(
-    String followUpId,
-    Map<String, dynamic> updates,
-  ) async {
+      String followUpId,
+      Map<String, dynamic> updates,
+      ) async {
     final response = await http.patch(
       Uri.parse('$baseUrl/follow-ups/$followUpId'),
       headers: {'Content-Type': 'application/json'},
@@ -97,7 +97,7 @@ class ApiService {
         'severity': 'No diabetic retinopathy detected',
         'severity_confidence': 0.94,
         'gradcam_url':
-            'https://placehold.co/400x400/22c55e/white/png?text=Normal',
+        'https://placehold.co/400x400/22c55e/white/png?text=Normal',
         'encounter_id': 'mock-001',
         'patient_id': 'mock-patient-001',
       },
@@ -109,7 +109,7 @@ class ApiService {
         'severity': 'Mild',
         'severity_confidence': 0.76,
         'gradcam_url':
-            'https://placehold.co/400x400/eab308/white/png?text=Monitor',
+        'https://placehold.co/400x400/eab308/white/png?text=Monitor',
         'encounter_id': 'mock-002',
         'patient_id': 'mock-patient-002',
       },
@@ -121,7 +121,7 @@ class ApiService {
         'severity': 'Moderate',
         'severity_confidence': 0.84,
         'gradcam_url':
-            'https://placehold.co/400x400/ef4444/white/png?text=Refer',
+        'https://placehold.co/400x400/ef4444/white/png?text=Refer',
         'encounter_id': 'mock-003',
         'patient_id': 'mock-patient-003',
       },
@@ -157,10 +157,10 @@ class ApiService {
 
   // ---- REAL: now correctly sends worker_name as a form field ----
   Future<ScreeningResult> _realUpload(
-    File imageFile,
-    String workerName,
-    String patientId,
-  ) async {
+      File imageFile,
+      String workerName,
+      String patientId,
+      ) async {
     final uri = Uri.parse('$baseUrl/predict');
     final request = http.MultipartRequest('POST', uri);
     request.files.add(
